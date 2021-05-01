@@ -1,0 +1,34 @@
+package com.example.santhosh.allservices
+
+import android.app.Notification
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.PendingIntent.getActivity
+import android.content.Context
+import android.content.Intent
+import android.graphics.BitmapFactory
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.support.v4.app.NotificationCompat
+
+class Notification : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_notification)
+        var nm=getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        var nf=NotificationCompat.Builder(this@Notification,"sany")
+        nf.setSmallIcon(R.drawable.ic_perm_identity_black_24dp)
+        var bmp=BitmapFactory.decodeResource(resources,R.drawable.ic_perm_identity_black_24dp)
+        nf.setLargeIcon(bmp)
+        nf.setTicker("hey are u there??")
+        nf.setContentTitle("MVSR ENGINEERING COLLEGE")
+        nf.setContentText("this is santhosh iam from mvsr eng college")
+        nf.setAutoCancel(true)
+        var i=Intent(this@Notification,Pending::class.java)
+        var p=getActivity(this@Notification,0,i,0)
+        nf.setContentIntent(p)
+        nm.notify(1,nf.build())
+
+    }
+}

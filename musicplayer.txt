@@ -1,0 +1,107 @@
+package com.example.santhosh.musicplayer
+
+import android.media.MediaPlayer
+import android.os.Build
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.support.annotation.RequiresApi
+import android.view.View
+import android.widget.SeekBar
+import kotlinx.android.synthetic.main.activity_main.*
+
+class MainActivity : AppCompatActivity() {
+    var mp: MediaPlayer? = null
+    var a: Int? = null
+    var b: Int? = null
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        mp = MediaPlayer.create(this@MainActivity, R.raw.san1)
+        var lis = object : View.OnClickListener {
+            override fun onClick(p0: View?) {
+                when (p0!!.id) {
+                    R.id.play -> {
+                        if (!mp!!.isPlaying)
+                            playmusic()
+                        else
+                            pausemusic()
+
+                    }
+                    R.id.prev -> {
+                        prevmusic()
+                    }
+                    R.id.next -> {
+                        nextmusic()
+                    }
+                }
+            }
+        }
+        play.setOnClickListener(lis)
+        next.setOnClickListener(lis)
+        prev.setOnClickListener(lis)
+        sbar.max = mp!!.duration
+        sbar.setMin(0)
+        sbar.setProgress(mp!!.currentPosition)
+        sbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
+                if (p2) {
+                    mp!!.seekTo(p1)
+                    p0!!.setProgress(p1)
+                }
+            }
+
+            override fun onStartTrackingTouch(p0: SeekBar?) {
+
+            }
+
+            override fun onStopTrackingTouch(p0: SeekBar?) {
+
+            }
+        })
+
+
+    }
+
+    fun playmusic() {
+        if (mp != null) {
+            mp!!.start()
+            play.setBackgroundResource(R.drawable.ic_pause_circle_filled_black_24dp)
+
+        }
+    }
+
+    fun pausemusic() {
+        mp!!.pause()
+        play.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp)
+    }
+
+    fun prevmusic() {
+        mp!!.seekTo(0)
+        sbar.setProgress(mp!!.currentPosition)
+        if (!mp!!.isPlaying)
+            mp!!.start()
+    }
+
+    var i = 0
+    fun nextmusic() {
+        i = i + 20000
+        if (i <= mp!!.duration) {
+            mp!!.seekTo(i)
+            sbar.setProgress(mp!!.currentPosition)
+            if (!mp!!.isPlaying)
+                mp!!.seekTo(i)
+            i = i + 20000
+
+        }
+        if (i >= mp!!.duration) {
+            i = 0
+            mp!!.seekTo(i)
+            sbar.setProgress(mp!!.currentPosition)
+            if (!mp!!.isPlaying)
+                mp!!.seekTo(i)
+            i = i + 20000
+
+        }
+    }
+}

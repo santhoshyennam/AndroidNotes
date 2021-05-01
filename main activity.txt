@@ -1,0 +1,196 @@
+package com.example.santhosh.meghproject
+
+import android.os.Bundle
+import android.support.design.widget.NavigationView
+import android.support.v4.view.GravityCompat
+import android.support.v7.app.ActionBarDrawerToggle
+import android.support.v7.app.AppCompatActivity
+import android.view.Menu
+import android.view.MenuItem
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.app_bar_main.*
+
+import android.content.Intent
+import com.google.firebase.auth.FirebaseAuth
+
+
+
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+    var fragmentTransaction = supportFragmentManager.beginTransaction()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        setSupportActionBar(toolbar)
+        var b = Bundle()
+        var a=Aboutus()
+        fragmentTransaction = supportFragmentManager.beginTransaction()
+        b.putString("text","aboutus")
+        a.arguments=b
+        fragmentTransaction.replace(R.id.nav_host_fragment,a)
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
+
+
+
+        val toggle = ActionBarDrawerToggle(
+                this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+        drawer_layout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        nav_view.setNavigationItemSelectedListener(this)
+    }
+
+    override fun onBackPressed() {
+        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
+            drawer_layout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        when (item.itemId) {
+            R.id.action_settings -> return true
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        var b = Bundle()
+        var a=Aboutus()
+        when (id) {
+            R.id.home -> {
+
+                 fragmentTransaction = supportFragmentManager.beginTransaction()
+                fragmentTransaction.replace(R.id.nav_host_fragment, HomeFrag())
+                fragmentTransaction.addToBackStack(null)
+                fragmentTransaction.commit()
+                return true
+            }
+            R.id.logout -> {
+                FirebaseAuth.getInstance().signOut()
+                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                finish()
+                return true
+            }
+
+            R.id.placements -> {
+                fragmentTransaction = supportFragmentManager.beginTransaction()
+                b.putString("text","placements")
+                a.arguments=b
+                fragmentTransaction.replace(R.id.nav_host_fragment,a)
+                fragmentTransaction.addToBackStack(null)
+                fragmentTransaction.commit()
+                return true
+            }
+            R.id.Admin -> {
+                fragmentTransaction = supportFragmentManager.beginTransaction()
+                b.putString("text","admin")
+                a.arguments=b
+                fragmentTransaction.replace(R.id.nav_host_fragment,a)
+                fragmentTransaction.addToBackStack(null)
+                fragmentTransaction.commit()
+                return true
+            }
+            R.id.Acadamics -> {
+                fragmentTransaction = supportFragmentManager.beginTransaction()
+                b.putString("text","academics")
+                a.arguments=b
+                fragmentTransaction.replace(R.id.nav_host_fragment,a)
+                fragmentTransaction.addToBackStack(null)
+                fragmentTransaction.commit()
+                return true
+            }
+            R.id.Departments -> {
+                fragmentTransaction = supportFragmentManager.beginTransaction()
+                b.putString("text","departments")
+                a.arguments=b
+                fragmentTransaction.replace(R.id.nav_host_fragment,a)
+                fragmentTransaction.addToBackStack(null)
+                fragmentTransaction.commit()
+                return true
+            }
+            R.id.nav_home -> {
+                fragmentTransaction = supportFragmentManager.beginTransaction()
+                b.putString("text","aboutus")
+                a.arguments=b
+                fragmentTransaction.replace(R.id.nav_host_fragment,a)
+                fragmentTransaction.addToBackStack(null)
+                fragmentTransaction.commit()
+                return true
+            }
+
+            R.id.sections ->
+            {
+                fragmentTransaction = supportFragmentManager.beginTransaction()
+                b.putString("text","sections")
+                a.arguments=b
+                fragmentTransaction.replace(R.id.nav_host_fragment,a)
+                fragmentTransaction.addToBackStack(null)
+                fragmentTransaction.commit()
+                return true
+            }
+            R.id.iqua->{
+                fragmentTransaction = supportFragmentManager.beginTransaction()
+                b.putString("text","iqac")
+                a.arguments=b
+                fragmentTransaction.replace(R.id.nav_host_fragment,a)
+                fragmentTransaction.addToBackStack(null)
+                fragmentTransaction.commit()
+                return true
+            }
+            R.id.lib->
+            {
+                fragmentTransaction = supportFragmentManager.beginTransaction()
+                b.putString("text","library")
+                a.arguments=b
+                fragmentTransaction.replace(R.id.nav_host_fragment,a)
+                fragmentTransaction.addToBackStack(null)
+                fragmentTransaction.commit()
+                return true
+            }
+            R.id.activitiesi->{
+                fragmentTransaction = supportFragmentManager.beginTransaction()
+                b.putString("text","activities")
+                a.arguments=b
+                fragmentTransaction.replace(R.id.nav_host_fragment,a)
+                fragmentTransaction.addToBackStack(null)
+                fragmentTransaction.commit()
+                return true
+            }
+            R.id.RD->{
+                fragmentTransaction = supportFragmentManager.beginTransaction()
+                b.putString("text","randd")
+                a.arguments=b
+                fragmentTransaction.replace(R.id.nav_host_fragment,a)
+                fragmentTransaction.addToBackStack(null)
+                fragmentTransaction.commit()
+                return true
+            }
+            R.id.sections->{
+                fragmentTransaction = supportFragmentManager.beginTransaction()
+                b.putString("text","sections")
+                a.arguments=b
+                fragmentTransaction.replace(R.id.nav_host_fragment,a)
+                fragmentTransaction.addToBackStack(null)
+                fragmentTransaction.commit()
+                return true
+            }
+
+        }
+
+
+        drawer_layout.closeDrawer(GravityCompat.START)
+        return true
+    }
+}

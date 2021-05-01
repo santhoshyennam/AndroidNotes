@@ -1,0 +1,36 @@
+package com.example.santhosh.allservices
+
+import android.annotation.SuppressLint
+import android.content.Context
+import android.net.ConnectivityManager
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.telephony.TelephonyManager
+import android.widget.ArrayAdapter
+import kotlinx.android.synthetic.main.activity_telephony.*
+
+class Telephony : AppCompatActivity() {
+
+    @SuppressLint("MissingPermission")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_telephony)
+        var tm=getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        var cm=getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        var list= mutableListOf<String>()
+        list.add("IMEI:"+tm.deviceId)
+        list.add("sim SNO"+tm.simSerialNumber)
+        list.add("network op"+tm.networkOperatorName)
+        list.add("sim op"+tm.simOperatorName)
+        list.add("country code"+tm.simCountryIso)
+        if(cm.activeNetworkInfo!=null)
+        list.add("internet connection enabled")
+        else
+            list.add("internet connection disabled")
+        var adapter=ArrayAdapter(this@Telephony,R.layout.indiview,list)
+        lview.adapter=adapter
+    }
+
+
+
+}

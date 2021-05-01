@@ -1,0 +1,86 @@
+package cubex.mahesh.listviewtest
+
+import android.content.pm.PackageManager
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
+import android.widget.ArrayAdapter
+import android.widget.Toast
+import kotlinx.android.synthetic.main.activity_main.*
+import java.io.File
+
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        var s=ContextCompat.checkSelfPermission(this@MainActivity,android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        if(s==PackageManager.PERMISSION_GRANTED){
+            readFiles()
+        }
+        else
+        {
+            ActivityCompat.requestPermissions(this@MainActivity, arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),111)
+        }
+
+    }
+    fun readFiles(){
+        var path="/storage/sdcard0/WhatsApp/Media/WhatsApp Images/"
+        var file=File(path)
+        if(!file.exists()){
+            path="/storage/emulated/0/WhatsApp/Media/WhatsApp Images/"
+            file= File(path)
+        }
+        var files=file.listFiles()
+        lview.adapter=myadap(this@MainActivity,files)
+    }
+
+
+
+}
+
+
+package cubex.mahesh.listviewtest
+
+import android.graphics.BitmapFactory
+import android.media.ThumbnailUtils
+import android.net.Uri
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.BaseAdapter
+import kotlinx.android.synthetic.main.indiview1.view.*
+import java.io.File
+
+  class myadap(var activity: MainActivity,var file:Array<File>):BaseAdapter() {
+      override fun getView(p0: Int, p1: View?, p2: ViewGroup?): View {
+    var inf=LayoutInflater.from(activity)
+          var v=inf.inflate(R.layout.indiview1,null)
+          var p=file[p0]
+        //  v.i1.setImageURI(Uri.fromFile(p))
+        var b=BitmapFactory.decodeFile(p.path)
+          var s=ThumbnailUtils.extractThumbnail(b,60,60)
+          v.i1.setImageBitmap(s)
+          v.tv1.text=p.name
+          v.tv2.text=" ${p.length()/1024.0} megabytes"
+          v.i2.setOnClickListener {
+                    p.delete()
+              activity.readFiles()
+          }
+          return v
+
+
+      }
+
+      override fun getItem(p0: Int): Any {
+        return 0      }
+
+      override fun getItemId(p0: Int): Long {
+            return 0
+      }
+
+      override fun getCount(): Int {
+        return file.size
+      }
+  }

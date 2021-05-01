@@ -1,0 +1,36 @@
+package com.example.santhosh.toolbar
+
+import android.app.Activity
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.widget.Toast
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.view.*
+
+class MainActivity : Activity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        setActionBar(tbar)
+        tbar.tv1.setText("yennam")
+        tbar.tv2.setText("online")
+        tbar.back.setOnClickListener {
+            finish()
+        }
+
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+       menuInflater.inflate(R.menu.mymenu,menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        Toast.makeText(this@MainActivity,item!!.title,Toast.LENGTH_LONG).show()
+        return super.onOptionsItemSelected(item)
+    }
+}

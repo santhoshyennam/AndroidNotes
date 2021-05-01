@@ -1,0 +1,59 @@
+package com.example.santhosh.broadcast
+
+import android.content.Intent
+import android.content.IntentFilter
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import kotlinx.android.synthetic.main.activity_main.*
+
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        var f=IntentFilter()
+        f.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
+        f.addAction(Intent.ACTION_HEADSET_PLUG)
+        f.addAction(Intent.ACTION_BATTERY_CHANGED)
+        f.addAction(Intent.ACTION_POWER_CONNECTED)
+        f.addAction(Intent.ACTION_POWER_DISCONNECTED)
+        f.addAction(Intent.ACTION_SCREEN_ON)
+        f.addAction("myaction")
+        registerReceiver(myrec(tv1),f)
+        b1.setOnClickListener {
+            var i=Intent()
+            i.setAction("myaction")
+            sendBroadcast(i)
+        }
+
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+package com.example.santhosh.broadcast
+
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.widget.TextView
+
+class myrec(var tv1:TextView) : BroadcastReceiver(){
+    override fun onReceive(p0: Context?, p1: Intent?) {
+        tv1.text=p1!!.action
+    }
+
+}

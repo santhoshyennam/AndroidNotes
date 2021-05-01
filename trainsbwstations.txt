@@ -1,0 +1,41 @@
+package com.example.santhosh.trainsbwstations
+
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.widget.ArrayAdapter
+import com.example.santhosh.trainsbwstations.Bean.RailBean
+import kotlinx.android.synthetic.main.activity_main.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        b1.setOnClickListener {
+            var r=Retrofit.Builder().addConverterFactory(GsonConverterFactory.create())
+                    .baseUrl("https://api.railwayapi.com/").build()
+            var api=r.create(TrainAPI::class.java)
+            var call=api.getTrainStatus(et1.text.toString(),et2.text.toString(),et3.text.toString())
+            call.enqueue(object : Callback<RailBean> {
+                    override fun onFailure(call: Call<RailBean>, t: Throwable) {             }
+
+                override fun onResponse(call: Call<RailBean>, response: Response<RailBean>) {
+                    var bean=response.body()
+                    var temp_list= mutableListOf<String>()
+                    var list= bean!!.trains
+                    for(route in list){
+                        temp_list.add("train name: ${route.name} \n train code:${route.number} \n departime: ${route.src_departure_time}" +
+                                "\t arrtime:${route.dest_arrival_time} \n travel time:${route.travel_time}")
+                    }
+                    var adapter =ArrayAdapter<String>(this@MainActivity,R.layout.indiview,temp_list)
+                    lview.adapter=adapter
+                }
+            })
+        }
+    }
+}

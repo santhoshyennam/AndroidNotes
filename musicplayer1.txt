@@ -1,0 +1,182 @@
+package com.example.santhosh.musicplayer
+
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.media.MediaPlayer
+import android.net.Uri
+import android.support.v4.content.ContextCompat.startActivity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.BaseAdapter
+import android.widget.Toast
+import kotlinx.android.synthetic.main.indiview.view.*
+import java.io.File
+
+class Myadapter(var activity:MainActivity,var files:MutableList<File>) : BaseAdapter (){
+    override fun getView(p0: Int, p1: View?, p2: ViewGroup?): View {
+        var inflater = LayoutInflater.from(activity)
+        var v = inflater.inflate(R.layout.indiview, null)
+        var file = files[p0]
+        v.tv1.text = file.name
+        v.tv1.setOnClickListener {
+            Toast.makeText(activity, "click on ${v.tv1.text.toString()}", Toast.LENGTH_LONG).show()
+            var i=Intent(activity,Main2Activity::class.java)
+            i.putExtra("music",files[p0])
+            i.putExtra("position",p0)
+            activity.startActivity(i)
+        }
+        return v
+    }
+
+    override fun getItem(p0: Int): Any {
+        return 0
+    }
+
+    override fun getItemId(p0: Int): Long {
+            return 0
+    }
+
+    override fun getCount(): Int {
+        return files.size
+    }
+}
+
+
+
+
+
+package com.example.santhosh.musicplayer
+
+import android.media.MediaPlayer
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.os.Environment
+import kotlinx.android.synthetic.main.activity_main.*
+import java.io.File
+var f:MutableList<File>? = null
+class MainActivity : AppCompatActivity() {
+    var mp: MediaPlayer? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        f = findsongs(Environment.getExternalStorageDirectory())
+        lview.adapter = Myadapter(this@MainActivity,f!! )
+    }
+    fun findsongs(root:File): MutableList<File>
+    {
+        var list = mutableListOf<File>()
+        var files = root.listFiles()
+        for (file in files) {
+            if (file.isDirectory && !file.isHidden) {
+                list.addAll(findsongs(file))
+            } else if (file.name.endsWith(".mp3"))
+                list.add(file)
+
+        }
+        return list
+    }
+
+
+}
+
+
+
+
+
+package com.example.santhosh.musicplayer
+
+import android.media.MediaPlayer
+import android.net.Uri
+import android.os.Build
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.support.annotation.RequiresApi
+import android.view.View
+import android.widget.SeekBar
+import kotlinx.android.synthetic.main.activity_main2.*
+import java.io.File
+class Main2Activity: AppCompatActivity() {
+    var mp:MediaPlayer ?=null
+    var file:File ?=null
+    var position:Int ? =null
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main2)
+       file=intent.extras.get("music") as File
+        mp=MediaPlayer.create(this@Main2Activity, Uri.fromFile(file))
+        mp!!.start()
+        var lis = object : View.OnClickListener {
+            override fun onClick(p0: View?) {
+                when (p0!!.id) {
+                    R.id.play -> {
+                        if (!mp!!.isPlaying)
+                            playmusic()
+                        else
+                            pausemusic()
+
+                    }
+                    R.id.prev -> {
+                        prevmusic()
+                    }
+                    R.id.next -> {
+                        nextmusic()
+                    }
+                }
+            }
+        }
+        play.setOnClickListener(lis)
+        next.setOnClickListener(lis)
+        prev.setOnClickListener(lis)
+        sbar.max = mp!!.duration
+        sbar.setMin(0)
+        sbar.setProgress(mp!!.currentPosition)
+        sbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
+                if (p2) {
+                    mp!!.seekTo(p1)
+                    p0!!.setProgress(p1)
+                }
+            }
+
+            override fun onStartTrackingTouch(p0: SeekBar?) {
+
+            }
+
+            override fun onStopTrackingTouch(p0: SeekBar?) {
+
+            }
+        })
+
+
+    }
+
+    fun playmusic() {
+           mp!!.stop()
+        mp=MediaPlayer.create(this@Main2Activity, Uri.fromFile(file))
+        mp!!.start()
+        play.setBackgroundResource(R.drawable.ic_pause_circle_filled_black_24dp)
+
+    }
+
+    fun pausemusic() {
+        mp!!.pause()
+        play.setBackgroundResource(R.drawable.ic_play_arrow_black_24dp)
+    }
+
+    fun prevmusic() {
+        mp!!.stop()
+        mp=MediaPlayer.create(this@Main2Activity,Uri.fromFile(file))
+        mp!!.start()
+    }
+
+    fun nextmusic() {
+        mp!!.stop()
+        mp=MediaPlayer.create(this@Main2Activity,Uri.fromFile(file))
+        mp!!.start()
+
+    }
+
+}

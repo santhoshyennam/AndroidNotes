@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">MeghProject</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string-array name="dept">
+        <string name="COMPUTER SCIENCE ENGINEERING">COMPUTER SCIENCE ENGINEERING</string>
+        <string name="ELECTRONICS &amp; COMMUNICATION ENGINEERING">ELECTRONICS &amp; COMMUNICATION ENGINEERING</string>
+        <string name="ELECTRONICS &amp; ELECTRICAL ENGINEERING">ELECTRONICS &amp; ENGINEERING TECHNOLOGY</string>
+        <string name="INFORMATION TECHNOLOGY">INFORMATION TECHNOLOGY</string>
+        <string name="MECHANICAL ENGINEERING">MECHANICAL ENGINEERING</string>
+        <string name="CIVIL ENGINEERING">CIVIL ENGINEERING</string>
+    </string-array>
+    <string-array name="Year">
+        <string name="First Year">COMPUTER SCIENCE ENGINEERING</string>
+        <string name="Second Year">ELECTRONICS &amp; COMMUNICATION ENGINEERING</string>
+        <string name="Third Year">ELECTRONICS &amp; ENGINEERING TECHNOLOGY</string>
+        <string name="Fourth Year">INFORMATION TECHNOLOGY</string>
+
+    </string-array>
+
+
+</resources>

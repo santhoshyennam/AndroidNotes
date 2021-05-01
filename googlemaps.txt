@@ -1,0 +1,281 @@
+package cubex.mahesh.googleplaces_nov7am
+
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+
+    private lateinit var mMap: GoogleMap
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_maps)
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        val mapFragment = supportFragmentManager
+                .findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+    }
+
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we just add a marker near Sydney, Australia.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
+
+        var from = intent.getBooleanExtra("from_single",
+                false)
+        if(from) {
+            var cur_lati = intent.getDoubleExtra("cur_loc_lati",
+                    0.0)
+            var cur_long = intent.getDoubleExtra("cur_loc_long",
+                    0.0)
+            var dest_lati = intent.getDoubleExtra("dest_loc_lati",
+                    0.0)
+            var dest_longi = intent.getDoubleExtra("dest_loc_long",
+                    0.0)
+
+            var options = MarkerOptions( )
+            options.position(LatLng(cur_lati,cur_long))
+            options.icon(BitmapDescriptorFactory.defaultMarker(
+                    BitmapDescriptorFactory.HUE_GREEN))
+            googleMap.addMarker(options)
+            googleMap.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                        LatLng(cur_lati,cur_long),15.0f))
+
+            var options1 = MarkerOptions( )
+            options1.position(LatLng(dest_lati,dest_longi))
+            googleMap.addMarker(options1)
+
+        }else{
+            var cur_lati = intent.getDoubleExtra("cur_loc_lati",
+                    0.0)
+            var cur_long = intent.getDoubleExtra("cur_loc_long",
+                    0.0)
+            var options = MarkerOptions( )
+            options.position(LatLng(cur_lati,cur_long))
+            options.icon(BitmapDescriptorFactory.defaultMarker(
+                    BitmapDescriptorFactory.HUE_GREEN))
+            googleMap.addMarker(options)
+            googleMap.animateCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                            LatLng(cur_lati,cur_long),15.0f))
+            for(place in list!!)
+            {
+                var options1 = MarkerOptions( )
+                options1.position(LatLng(place.geometry.location.lat,
+                        place.geometry.location.lng))
+                options1.title(place.name)
+                googleMap.addMarker(options1)
+            }
+
+
+        }
+
+    }
+}
+
+
+
+
+
+
+
+
+
+package cubex.mahesh.googleplaces_nov7am
+
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.BaseAdapter
+import android.widget.SeekBar
+import com.google.android.gms.location.places.ui.PlacePicker
+import cubex.mahesh.googleplaces_nov7am.beans.PlacesBean
+import cubex.mahesh.googleplaces_nov7am.beans.ResultsItem
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.indiview.view.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+
+var list:MutableList<ResultsItem>? = null
+
+
+class MainActivity : AppCompatActivity() {
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        getCurrentLocation( )
+
+        pin.setOnClickListener {
+            var i = PlacePicker.IntentBuilder( )
+            startActivityForResult(i.build(this@MainActivity),
+                    123)
+        }
+
+        sbar1.setOnSeekBarChangeListener(
+                object : SeekBar.OnSeekBarChangeListener {
+                    override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
+                        progress.setText(p1.toString())
+                    }
+
+                    override fun onStartTrackingTouch(p0: SeekBar?) {
+                    }
+
+                    override fun onStopTrackingTouch(p0: SeekBar?) {
+
+                    }
+
+                })
+
+        getPlaces.setOnClickListener {
+
+            var r = Retrofit.Builder().
+                            addConverterFactory(GsonConverterFactory.create()).
+                            baseUrl("https://maps.googleapis.com/").
+                            build()
+            var api = r.create(PlacesAPI::class.java)
+            var call = api.getPlaces("${tv_lati.text},${tv_longi.text}",
+                                                sp1.selectedItem.toString(),
+                                                progress.text.toString())
+            call.enqueue(object :Callback<PlacesBean> {
+
+                override fun onResponse(call: Call<PlacesBean>, response: Response<PlacesBean>) {
+
+                    var bean = response.body()
+                            list = bean!!.results as MutableList<ResultsItem>?
+                    lview.adapter = object:BaseAdapter(){
+                        override fun getView(p0: Int, p1: View?, p2: ViewGroup?): View {
+                            var inflater = LayoutInflater.from(this@MainActivity)
+                            var v = inflater.inflate(R.layout.indiview,null)
+                            v.pname.text = list!!.get(p0).name
+                            v.paddress.text = list!!.get(p0).vicinity
+                            v.pohours.text = list!!.get(p0).openingHours.openNow.toString()
+                            v.loc.setOnClickListener {
+                                        var i = Intent(this@MainActivity,
+                                                MapsActivity::class.java)
+                                        i.putExtra("cur_loc_lati",
+                                                tv_lati.text.toString().toDouble())
+                                        i.putExtra("cur_loc_long",
+                                                tv_longi.text.toString().toDouble())
+                                        i.putExtra("dest_loc_lati",
+                                                                                 list!!.get(p0).geometry.location.lat)
+                                        i.putExtra("dest_loc_long",
+                                                list!!.get(p0).geometry.location.lng)
+                                        i.putExtra("from_single",true)
+                                startActivity(i)
+
+
+                            }
+                            return  v
+                        }
+
+                        override fun getItem(p0: Int): Any {
+                        return  0
+                        }
+
+                        override fun getItemId(p0: Int): Long {
+                       return  0
+                        }
+
+                        override fun getCount(): Int {
+                            return  list!!.size
+                        }
+
+
+                    }
+
+                    showAllonMap.setOnClickListener {
+                        var i = Intent(this@MainActivity,
+                                MapsActivity::class.java)
+                        i.putExtra("cur_loc_lati",
+                                tv_lati.text.toString().toDouble())
+                        i.putExtra("cur_loc_long",
+                                tv_longi.text.toString().toDouble())
+                        i.putExtra("from_single",false)
+                        startActivity(i)
+
+                    }
+
+                } // onResponse
+
+                override fun onFailure(call: Call<PlacesBean>, t: Throwable) {
+
+                }
+
+            })
+
+        }
+
+
+
+    } // onCreate( )
+
+    @SuppressLint("MissingPermission")
+    fun  getCurrentLocation( )
+    {
+         var lManager = getSystemService(Context.LOCATION_SERVICE)
+                 as LocationManager
+        lManager.requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER,
+                1000.toLong(), 1.toFloat(),
+                object : LocationListener {
+                    override fun onLocationChanged(l: Location?) {
+                        tv_lati.setText(l!!.latitude.toString())
+                        tv_longi.setText(l!!.longitude.toString())
+                        lManager.removeUpdates(this)
+                    }
+                    override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {
+                    }
+                    override fun onProviderEnabled(p0: String?) {
+                    }
+                    override fun onProviderDisabled(p0: String?) {
+
+                    }
+                })
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if(resultCode == Activity.RESULT_OK)
+        {
+            var place = PlacePicker.getPlace(this@MainActivity,data)
+            tv_lati.setText(place.latLng.latitude.toString())
+            tv_longi.setText(place.latLng.longitude.toString())
+
+        }
+
+    }
+
+}

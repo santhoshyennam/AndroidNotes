@@ -1,0 +1,168 @@
+package com.example.santhosh.rview_san1
+
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
+import kotlinx.android.synthetic.main.activity_main.*
+
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        var lm=LinearLayoutManager(this@MainActivity,LinearLayoutManager.VERTICAL,false)
+        rview.layoutManager=lm
+        rview.adapter=Myadapter(this@MainActivity)
+    }
+}
+
+
+
+
+package com.example.santhosh.rview_san1
+
+import android.net.Uri
+import android.support.v7.widget.RecyclerView
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import java.io.File
+
+class Myadapter(var ma:MainActivity): RecyclerView.Adapter<Myholder>() {
+    var files: Array<File>? = null
+
+    init {
+        var path = "/storage/sdcard0/WhatsApp/Media/WhatsApp Images/"
+        var file = File(path)
+        if (!file.exists()) {
+            path = "/storage/emulated/0/WhatsApp/Media/WhatsApp Images/"
+            file = File(path)
+            files = file.listFiles()
+        }
+
+    }
+
+    override fun onCreateViewHolder(p0: ViewGroup, p1: Int): Myholder {
+        var inf = LayoutInflater.from(ma)
+        var v = inf.inflate(R.layout.indiview, p0, false)
+        return Myholder(v)
+    }
+
+    override fun getItemCount(): Int {
+        return files!!.size
+    }
+
+    override fun onBindViewHolder(p0: Myholder, p1: Int) {
+        var ff = files!![p1]
+        p0.iview!!.setImageURI(Uri.fromFile(ff))
+        p0.tv1!!.text = ff.name
+        p0.tv2!!.text = ff.length().toString()
+        p0.del!!.setOnClickListener {
+            ff.delete()
+            var path = "/storage/sdcard0/WhatsApp/Media/WhatsApp Images/"
+            var file = File(path)
+            if (!file.exists()) {
+                path = "/storage/emulated/0/WhatsApp/Media/WhatsApp Images/"
+                file = File(path)
+                files = file.listFiles()
+            }
+            files = file.listFiles()
+            this.notifyDataSetChanged()
+        }
+    }
+}
+
+
+
+
+package com.example.santhosh.rview_san1
+
+import android.support.v7.widget.RecyclerView
+import android.view.View
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
+import kotlinx.android.synthetic.main.indiview.view.*
+
+class Myholder(v:View):RecyclerView.ViewHolder(v){
+
+    var iview:ImageView? =null
+    var tv1:TextView? =null
+    var tv2:TextView? =null
+    var del:Button ? =null
+    init {
+        iview=v.iview
+        tv1=v.tv1
+        tv2=v.tv2
+        del=v.del
+    }
+
+}
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+   >
+
+
+   <android.support.v7.widget.RecyclerView
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:id="@+id/rview"></android.support.v7.widget.RecyclerView>
+</LinearLayout>
+
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="5sp"
+    app:cardCornerRadius="15dp"
+    android:elevation="10sp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="0.2"
+            android:layout_height="50dp"
+            android:id="@+id/iview"
+            android:src="@drawable/ic_android_black_24dp"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="0.65"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="file name"
+                android:textSize="15sp"
+                android:textStyle="italic"
+                android:textColor="#FF0000"
+                android:id="@+id/tv1"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="file size"
+                android:textSize="15sp"
+                android:textStyle="italic"
+                android:textColor="#0000FF"
+                android:id="@+id/tv2"/>
+
+        </LinearLayout>
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight="0.15"
+            android:layout_height="wrap_content"
+            android:id="@+id/del"
+            android:background="@drawable/ic_delete_black_24dp"/>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

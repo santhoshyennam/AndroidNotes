@@ -1,0 +1,38 @@
+package com.example.santhosh.newproj
+
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.provider.ContactsContract
+import android.view.View
+import android.widget.AdapterView
+import android.widget.SimpleCursorAdapter
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.indiview.*
+
+class MainActivity : AppCompatActivity() {
+
+    @SuppressLint("MissingPermission", "NewApi")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        var c=contentResolver
+        var s=c.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,null,null,
+                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME )
+        var from= arrayOf(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,ContactsContract.CommonDataKinds.Phone.NUMBER)
+        var to= intArrayOf(R.id.tv1,R.id.tv2)
+        var adapter=SimpleCursorAdapter(this@MainActivity,R.layout.indiview,s,from,to,0)
+        var list= mutableListOf<String>()
+        for(i in )
+        lview.adapter=adapter
+       lview.setOnItemClickListener(object : AdapterView.OnItemClickListener {
+           override fun onItemClick(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                var i=Intent(this@MainActivity,Main2Activity::class.java)
+               i.putExtra("num",y[p2])
+               startActivity(i)
+           }
+       })
+    }
+}
